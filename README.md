@@ -10,3 +10,7 @@
 <p>__ng_b_i_Fanpage_video_v__n_i_dung_auto_b_ng_Open_Ai.json
 </p> <p>Sheet name: Up Post với video setup và content auto</p>
 
+<!-- ================================= -->
+<h1>4. Process auto up video Reels  Google Drive on FB</h1>
+<p>Quy_tr_nh_t____ng___ng_video_Reels_t__Google_Drive_l_n_Facebook_b_ng_n8n.json
+</p> <p>Sheet name: Process auto up video Reels  Google Drive on FB</p>
