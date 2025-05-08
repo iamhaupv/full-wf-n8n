@@ -1,0 +1,535 @@
+{
+  "name": "Up Post với 1 ảnh auto và content auto",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Bạn là 1 Blogger chuyên về Lĩnh vực mỹ phẩm Nhật Bản. Bạn viết nội dung chia sẻ kiến thức dành cho khách hàng nữ độ tuổi 25 đến 35 tuổi, và đăng tải trên 1 trang Facebook. Bạn hãy viết cho tôi 1 Status Facebook chia sẻ về chủ đề: {{ $json['Chủ đề'] }} bao gồm các nội dung chính sau: {{ $json['Nội dung chính'] }}, lấy thêm cho tôi 5 hastag phổ biến về chủ đề.\n\nOutput Format:\n- Trả kết quả bằng tiếng việt.\n- Xuống dòng ở tiêu đề.\n- Status sẽ viết bằng định dạng văn bản, không có format in đậm, in nghiêng, ...\n- Luôn luôn sử dụng SerpAPI để tìm ra keyword SEO tốt nhất.\n- Sử dụng biểu tượng cảm xúc (emoji) ở đầu dòng để làm nổi bật các ý chính, ví dụ: ♥️, 🍀, 🏵️, ⭐… không chèn vào cuối câu, cuối đoạn.\n- Giữ nội dung ngắn gọn, thu hút, không dịch từng từ mà đảm bảo ý nghĩa trôi chảy, dễ đọc\n- Tránh các câu quá dài, giữ bài viết dễ hiểu, giọng điệu tự nhiên\n- Đảm bảo đúng chính tả, ngữ pháp tiếng Việt, tuyệt đối không dùng ký hiệu * hoặc ** trong bài viết.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1260,
+        0
+      ],
+      "id": "fcce30d2-6407-4445-a2a6-8678853323ed",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1160,
+        220
+      ],
+      "id": "570c237e-073c-4313-a49d-89f11b793b7b",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "I7hAaCkG9aNi9mp6",
+          "name": "OpenAi account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"title\": \"The headline for the social meadia post\",\n\t\"content\": \"The formatted social media post\" \n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1540,
+        220
+      ],
+      "id": "d8da4fef-df79-47d7-8af7-783da7124517",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e8661c2a-7d22-465c-b381-68ae3accc39e",
+              "name": "Chủ đề",
+              "value": "={{ $json.Title }}",
+              "type": "string"
+            },
+            {
+              "id": "566923a6-b0a6-4815-abde-08b1fb5e99ff",
+              "name": "Nội dung chính",
+              "value": "={{ $json[\"Main Content\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "f7231d9a-a86d-4a46-a308-1853fdca61c3",
+              "name": "Nội dung bắt buộc",
+              "value": "={{ $json[\"Mandatory Content\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "d17bc96f-c610-4bd2-9d09-35719b17b99d",
+              "name": "Page_ID",
+              "value": "={{ $json.Page_ID }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        980,
+        0
+      ],
+      "id": "4c7877ff-d30d-4757-8e94-34f290567a9a",
+      "name": "Read content"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v20.0",
+        "node": "={{ $('Read content').item.json.Page_ID }}",
+        "edge": "photos",
+        "sendBinaryData": true,
+        "binaryPropertyName": "data",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "message",
+                "value": "={{ $('AI Agent').item.json.output.title }}\n{{ $('AI Agent').item.json.output.content }}\n\n{{ $('Read content').item.json['Nội dung bắt buộc'] }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        2120,
+        0
+      ],
+      "id": "b89fa91d-16bc-4919-ab8d-1a299a7dce28",
+      "name": "Post single picture",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "4w0QiGThbs5eeWj0",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "863a9074-3f2f-4439-bffa-fcad96be2e7b",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y",
+          "mode": "list",
+          "cachedResultName": "Full WF n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1353984405,
+          "mode": "list",
+          "cachedResultName": "Up Post với 1 ảnh auto và content auto",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y/edit#gid=1353984405"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        260,
+        0
+      ],
+      "id": "7aab8aa8-cac0-449e-83c0-453a5c243e55",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZZILbjLGgSlFk78k",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "985340fa-7fc2-48e5-84bf-74f61d75831a",
+              "name": "post_id",
+              "value": "=http://facebook.com/{{ $json.post_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2600,
+        0
+      ],
+      "id": "7ba16063-26d3-4cc3-8006-3781108d8a3c",
+      "name": "link post"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y",
+          "mode": "list",
+          "cachedResultName": "Full WF n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Đăng bài Fanpage với 1 ảnh và nội dung tự động",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Google Sheets').item.json.row_number }}",
+            "Status": "Finished"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "STT",
+              "displayName": "STT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Main Content",
+              "displayName": "Main Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Mandatory Content",
+              "displayName": "Mandatory Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Page_ID",
+              "displayName": "Page_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2340,
+        0
+      ],
+      "id": "178658f1-bf80-47ed-b976-932e89cd2e7f",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZZILbjLGgSlFk78k",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().filter(item => item.json.Status === \"\");\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ],
+      "id": "ae979f1e-feff-4da6-b4b7-0d4694c7140e",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f87aafc1-5cb8-4bbc-af75-610ff71ba3de",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "Not found",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        700,
+        0
+      ],
+      "id": "0affadb6-a82c-4144-abf1-6b5674b2b7d2",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "prompt": "={{ $json.output.title }} {{ $json.output.content }} dựa vào nội dung trên tạo ra 1 tấm hình phù hợp",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1620,
+        0
+      ],
+      "id": "5faa3377-f5f2-42e6-90ff-1c5c0a1f24b4",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "I7hAaCkG9aNi9mp6",
+          "name": "OpenAi account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read content": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post single picture": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "link post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Read content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Post single picture",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "96440a55-c272-463c-8134-bbd11806a3df",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "27f300b5a724bfb4b8c812b1f202e890f33a244619ea6c290b1a6c84110702e5"
+  },
+  "id": "wBdWlCGzN0VKFoOm",
+  "tags": []
+}
