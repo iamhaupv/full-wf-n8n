@@ -1,0 +1,795 @@
+{
+  "name": "Đăng bài Fanpage nhiều ảnh và nội dung tự động bằng Open Ai",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1400,
+        560
+      ],
+      "id": "473ea068-c41c-4922-923b-009499855731",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v20.0",
+        "node": "115786087216495",
+        "edge": "photos",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "message",
+                "value": "=hello"
+              },
+              {
+                "name": "url",
+                "value": "={{ $json.link }}"
+              },
+              {
+                "name": "published",
+                "value": "false"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        260,
+        460
+      ],
+      "id": "b909f939-77bb-4cf4-8dc5-318161927e34",
+      "name": "Post Picture unpublish",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "4w0QiGThbs5eeWj0",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v20.0",
+        "node": "={{ $('Set Data').item.json.Page_ID }}",
+        "edge": "feed",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "attached_media",
+                "value": "={{ $json.attached_media }}"
+              },
+              {
+                "name": "message",
+                "value": "={{ $json.output.title }}\n\n{{ $json.output.content }}\n{{ $('Set Data').item.json['Nội dung bắt buộc'] }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        300,
+        1060
+      ],
+      "id": "ab7c216c-dbd4-42e3-825d-145c542d77f2",
+      "name": "Post multiple picture",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "4w0QiGThbs5eeWj0",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputLinks = $json[\"Link\"];\nconst message = $json[\"Message\"];\n\nif (typeof inputLinks === \"string\") {\n  // Tách các link thành mảng\n  const linksArray = inputLinks.split(',').map(link => link.trim());\n\n  // Tạo output: mỗi link là 1 dòng và message giữ nguyên trên tất cả các dòng\n  return linksArray.map(link => ({\n    json: {\n      link,      // Link riêng từng dòng\n      message    // Message chung 1 dòng\n    }\n  }));\n} else {\n  throw new Error(\"Input 'Link' is not a string. Please check your input.\");\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -440,
+        460
+      ],
+      "id": "c7236cac-5e39-4e09-bc1c-ace7eede8ee5",
+      "name": "Split link"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    attached_media: items.map(item => ({\n      media_fbid: item.json.id // Giữ danh sách media_fbid từ các item trước\n    })),\n  }\n}];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        620
+      ],
+      "id": "38070168-5baf-4f46-aada-a95bfefcae2d",
+      "name": "Merge Photo Ids"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        300,
+        860
+      ],
+      "id": "55ecf95b-7d6e-4766-9152-2583d9b316b5",
+      "name": "Merge",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "53ffe9eb-0779-4124-af16-ebc16e2e2ebc",
+              "name": "Chủ đề",
+              "value": "={{ $json.Title }}",
+              "type": "string"
+            },
+            {
+              "id": "a5b181f9-0e38-4179-9f82-8cbf0fa9f3d6",
+              "name": "Page_ID",
+              "value": "={{ $json.Page_ID }}",
+              "type": "number"
+            },
+            {
+              "id": "fa62f548-c770-4276-a6a0-02b015cff7e6",
+              "name": "Nội dung bắt buộc",
+              "value": "={{ $json['Mandatory Content'] }}",
+              "type": "string"
+            },
+            {
+              "id": "e752689e-7871-4e58-a5e6-4e4641a15ffe",
+              "name": "Nội dung chính",
+              "value": "={{ $json['Main Content'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -640,
+        700
+      ],
+      "id": "99988e24-7b81-4224-9fbe-acb687c5c50f",
+      "name": "Set Data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b76e3cfd-474f-4c98-bc60-fa27537e2e06",
+              "name": "Link",
+              "value": "={{ $json['Image Avatar'] }}, {{ $json['Image 1'] }}, {{ $json['Image 2'] }}, {{ $json['Image 3'] }}, {{ $json['Image 4'] }}, {{ $json['Image 5'] }}, {{ $json['Image 6'] }}, {{ $json['Image 7'] }}, {{ $json['Image 8 '] }}, {{ $json['Image 9 '] }}, {{ $json['Image 10'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -640,
+        460
+      ],
+      "id": "7ddef174-f820-464f-88d1-429ea9cd4f6b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e63cfd50-6a69-4cc9-a51f-cb068fd043ae",
+              "leftValue": "={{ $json.link }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        60,
+        460
+      ],
+      "id": "cd12043c-4da6-452e-8fcd-fad76a5455de",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Bạn là 1 Blogger chuyên về Lĩnh vực mỹ phẩm Nhật Bản. Bạn viết nội dung chia sẻ kiến thức dành cho khách hàng nữ độ tuổi 25 đến 35 tuổi, và đăng tải trên 1 trang Facebook. Bạn hãy viết cho tôi 1 Status Facebook chia sẻ về chủ đề: {{ $json['Chủ đề'] }} bao gồm các nội dung chính sau: {{ $json['Nội dung chính'] }}, lấy thêm cho tôi 5 hastag phổ biến về chủ đề.\n\nOutput Format:\n- Trả kết quả bằng tiếng việt.\n- Xuống dòng ở tiêu đề.\n- Status sẽ viết bằng định dạng văn bản, không có format in đậm, in nghiêng, ...\n- Luôn luôn sử dụng SerpAPI để tìm ra keyword SEO tốt nhất.\n- Sử dụng biểu tượng cảm xúc (emoji) ở đầu dòng để làm nổi bật các ý chính, ví dụ: ♥️, 🍀, 🏵️, ⭐… không chèn vào cuối câu, cuối đoạn.\n- Giữ nội dung ngắn gọn, thu hút, không dịch từng từ mà đảm bảo ý nghĩa trôi chảy, dễ đọc\n- Tránh các câu quá dài, giữ bài viết dễ hiểu, giọng điệu tự nhiên\n- Đảm bảo đúng chính tả, ngữ pháp tiếng Việt, tuyệt đối không dùng ký hiệu * hoặc ** trong bài viết.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -300,
+        680
+      ],
+      "id": "583265ed-f4c9-4ce5-8e5e-e08aeb6672d6",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -380,
+        880
+      ],
+      "id": "a69d964a-b8bb-4b86-96ec-edf17f82483b",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "I7hAaCkG9aNi9mp6",
+          "name": "OpenAi account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"title\": \"The headline for the social meadia post\",\n\t\"content\": \"The formatted social media post\" \n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -40,
+        880
+      ],
+      "id": "540d39fd-5693-4450-9ccb-ad8e9778ae80",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y",
+          "mode": "list",
+          "cachedResultName": "Full WF n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 114103000,
+          "mode": "list",
+          "cachedResultName": "Up Post Page setup images, auto content Open Ai",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y/edit#gid=114103000"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1200,
+        560
+      ],
+      "id": "192c78ed-7bc4-4615-9fbe-4653daadfbbe",
+      "name": "Google Sheets2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZZILbjLGgSlFk78k",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Lấy mảng các link từ input\nconst links = $input.all().map(item => item.json.link);\n\n// Hàm chuyển đổi link Google Drive thành link tải trực tiếp\nconst convertToDownloadLink = (link) => {\n    const regex = /\\/d\\/(.*?)\\//;\n    const match = link.match(regex);\n    if (match && match[1]) {\n        const fileId = match[1];\n        return `https://drive.google.com/uc?export=download&id=${fileId}`;\n    }\n    return null; // Nếu không tìm thấy ID, trả về null\n};\n\n// Chuyển đổi tất cả các link thành mảng các link tải trực tiếp\nconst downloadLinks = links.map(link => convertToDownloadLink(link)).filter(link => link !== null);\n\n// Trả về mảng các link tải trực tiếp\nreturn [{ json: { downloadLinks } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -260,
+        460
+      ],
+      "id": "9ff75e31-cdfb-4dbf-af2b-1c8ba50f22bb",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json.downloadLinks;\n\n// Trả về mảng các object chỉ chứa key \"link\"\nreturn data.map(link => ({ link }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -100,
+        460
+      ],
+      "id": "048ac556-f344-4409-85e7-14919d1765ba",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst targetRow = items.find(item => \n  (!item.json['Status'] || item.json['Status'] === '') || \n  (item.json['Status'] && item.json['Status'].toLowerCase().includes(' '))\n);\nreturn targetRow ? [targetRow] : [];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1020,
+        560
+      ],
+      "id": "01dd0312-86a4-414a-b78d-9fa7f27e1aee",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y",
+          "mode": "list",
+          "cachedResultName": "Full WF n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 114103000,
+          "mode": "list",
+          "cachedResultName": "Up Post Page setup images, auto content Open Ai",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y/edit#gid=114103000"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Google Sheets2').item.json.row_number }}",
+            "Status": "Finished"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "STT",
+              "displayName": "STT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Main Content",
+              "displayName": "Main Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Mandatory Content",
+              "displayName": "Mandatory Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Page_ID",
+              "displayName": "Page_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Image Avatar",
+              "displayName": "Image Avatar",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Image 1",
+              "displayName": "Image 1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Image 2",
+              "displayName": "Image 2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Image 3",
+              "displayName": "Image 3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Image 4",
+              "displayName": "Image 4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Image 5",
+              "displayName": "Image 5",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Image 6",
+              "displayName": "Image 6",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Image 7",
+              "displayName": "Image 7",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Image 8 ",
+              "displayName": "Image 8 ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Image 9 ",
+              "displayName": "Image 9 ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Image 10",
+              "displayName": "Image 10",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        40,
+        1060
+      ],
+      "id": "77484328-3e26-45e4-9f55-7888399733eb",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZZILbjLGgSlFk78k",
+          "name": "Google Sheets account 6"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post Picture unpublish": {
+      "main": [
+        [
+          {
+            "node": "Merge Photo Ids",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post multiple picture": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split link": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Photo Ids": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Post multiple picture",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Split link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Post Picture unpublish",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets2": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Set Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d7734f81-5f65-40ed-9be3-41f88b88e582",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "27f300b5a724bfb4b8c812b1f202e890f33a244619ea6c290b1a6c84110702e5"
+  },
+  "id": "EZbCFqYyRzezYL6i",
+  "tags": []
+}
