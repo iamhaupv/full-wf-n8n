@@ -1,6 +1,12 @@
 <h1>Link setup google sheets: https://docs.google.com/spreadsheets/d/1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y/edit?usp=sharing</h1>
 <h1>1. Đăng bài Fanpage với 1 ảnh và nội dung tự động</h1>
 <p>__ng_b_i_Fanpage_v_i_1__nh_v__n_i_dung_t____ng.json</p> <p>Sheet name: Đăng bài Fanpage với 1 ảnh và nội dung tự động</p>
+<!-- ================================= -->
 <h1>2. Up Post với 1 ảnh auto và content auto</h1>
 <p>Up_Post_v_i_1__nh_auto_v__content_auto.json
 </p> <p>Sheet name: Up Post với 1 ảnh auto và content auto</p>
+<!-- ================================= -->
+<h1>3. Up Post với video setup và content auto</h1>
+<p>__ng_b_i_Fanpage_video_v__n_i_dung_auto_b_ng_Open_Ai.json
+</p> <p>Sheet name: Up Post với video setup và content auto</p>
+
