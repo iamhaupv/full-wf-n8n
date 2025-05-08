@@ -14,3 +14,6 @@
 <h1>4. Process auto up video Reels  Google Drive on FB</h1>
 <p>Quy_tr_nh_t____ng___ng_video_Reels_t__Google_Drive_l_n_Facebook_b_ng_n8n.json
 </p> <p>Sheet name: Process auto up video Reels  Google Drive on FB</p>
+<!-- ================================= -->
+<h1>5. Up Post Page setup images, auto content Open Ai</h1>
+<p>__ng_b_i_Fanpage_nhi_u__nh_v__n_i_dung_t____ng_b_ng_Open_Ai.json</p> <p>Sheet name: Up Post Page setup images, auto content Open Ai</p>
