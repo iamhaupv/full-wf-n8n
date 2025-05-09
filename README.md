@@ -19,5 +19,5 @@
 <p>__ng_b_i_Fanpage_nhi_u__nh_v__n_i_dung_t____ng_b_ng_Open_Ai.json</p> <p>Sheet name: Up Post Page setup images, auto content Open Ai</p>
 
 <!-- ================================= -->
-<h1>5. Dev02_Chatbot_Messages_Done.json</h1>
-<p>Dev02_Chatbot_Messages_Done.json</p>
+<h1>Tự động phản hồi comment/inbox trên các nền tảng Social</h1>
+<p>Dev02_T____ng_ph_n_h_i_comment_inbox_tr_n_c_c_n_n_t_ng_Social.json</p>
