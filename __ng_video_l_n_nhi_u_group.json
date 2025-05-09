@@ -1,0 +1,583 @@
+{
+  "name": "Đăng video lên nhiều group",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "#Test đăng Video {Group}\n",
+        "height": 220,
+        "width": 1020,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        0
+      ],
+      "id": "28d82249-1347-44b1-805d-685cb0f9d57b",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v22.0/{{ $('Set Token, ID1').first().json['ID {Group} '] }}/videos",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "access_token",
+              "value": "={{ $('Set Token, ID1').first().json.Token }}"
+            },
+            {
+              "name": "file_url",
+              "value": "={{ $('Edit Fields2').first().json.video }}"
+            },
+            {
+              "name": "description",
+              "value": "[Video Group] Kỷ niệm 50 năm Ngày Giải phóng miền Nam, thống nhất đất nước "
+            },
+            {
+              "name": "title",
+              "value": "Nhiệt liệt chào mừng Đại lễ 30/04/2025"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -180,
+        40
+      ],
+      "id": "95b392cc-3049-4ec5-8c4d-f614a17c7d6b",
+      "name": "Post video",
+      "notesInFlow": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v22.0/{{ $('Post video').item.json.id }}/comments",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Set Token, ID1').first().json.Token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "Test"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        40
+      ],
+      "id": "e20f0a40-fcb0-4629-be99-5bf0f36fe559",
+      "name": "Đăng cmt"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v22.0/{{ $json.id }}/likes",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Set Token, ID1').first().json.Token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        20,
+        40
+      ],
+      "id": "3ac8944a-8ef5-49fc-af00-a7afa0d82499",
+      "name": "Like post"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v22.0/{{ $json.id }}/likes",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Set Token, ID1').first().json.Token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        40
+      ],
+      "id": "80571c96-cb39-4ac9-a304-e3874cd6a7bc",
+      "name": "Like cmt",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v22.0/{{ $('Đăng cmt').item.json.id }}/comments",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Set Token, ID1').first().json.Token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "Rep cmt"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        640,
+        40
+      ],
+      "id": "efbf1394-66bf-4a4b-86b2-3ddd09c3b5e9",
+      "name": "Rep cmt"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "540bff32-117f-4553-949a-f1fcf3e3e140",
+              "name": "video",
+              "value": "https://n8n696969696969.s3.ap-southeast-1.amazonaws.com/SnapVid.Net_AQPaMkhVR4DPU4EJCkaFKXA1e9hnks1YMqj9hEAJZ_VkQRBMgjL64hKeOhOdyuT56SVEYjCJeiRzP_lDm9O6MtAI_720p_(HD).mp4",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -660,
+        60
+      ],
+      "id": "febe793b-95c9-4175-a1a7-1010a1e1c34d",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "content": "# Video",
+        "height": 240,
+        "width": 460
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -820,
+        0
+      ],
+      "id": "d8e64b4b-f9f3-43c0-8b93-e307227e4c08",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b89b8ccc-7a53-443e-aea4-7a5cbcb1cde2",
+              "name": "=Token",
+              "value": "EAAD6V7os0gcBOxBckhFDTVhI54QrxYZCEUbdRFpKk8XfXGgxHHO74ptEfjxjpahz2pVlaXV8i77FX5Lx1x84fF6DnhJPHB5dMKn9bPAJ1cLxurQufRvFE69qjxZBB1r7yPenOoO2BkySRxkd3QZCHxU9cSmZCsQ0yZBfsboj47LbpO8enNgEdkAZDZD",
+              "type": "string"
+            },
+            {
+              "id": "a7e3fde9-3237-4461-8e25-6aeacc4d35e5",
+              "name": "ID {Group} ",
+              "value": "579277368533489",
+              "type": "string"
+            },
+            {
+              "id": "bb5083a8-dae5-426e-83a2-31d657af7fb6",
+              "name": "ID {Trang cá nhân}",
+              "value": "me",
+              "type": "string"
+            },
+            {
+              "id": "35c727dc-14ac-4566-adb8-63be7341dbbf",
+              "name": "ID {Trang cá nhân người khác}",
+              "value": "4",
+              "type": "string"
+            },
+            {
+              "id": "7ded143c-bea9-457f-b909-9c8b9fd6da2b",
+              "name": "ID {Page}",
+              "value": "100044172082436",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1040,
+        60
+      ],
+      "id": "c50ce70f-4317-4b56-8f0a-da0b401826f7",
+      "name": "Set Token, ID1",
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "retryOnFail": false
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1400,
+        60
+      ],
+      "id": "903befa9-2a82-4c0a-a37c-eccd87622931",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y",
+          "mode": "list",
+          "cachedResultName": "Full WF n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1777283599,
+          "mode": "list",
+          "cachedResultName": "Đăng video lên nhiều group",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y/edit#gid=1777283599"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1240,
+        60
+      ],
+      "id": "aa2eb70c-1bfe-46df-9dbf-aaee40db7586",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZZILbjLGgSlFk78k",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y",
+          "mode": "list",
+          "cachedResultName": "Full WF n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1777283599,
+          "mode": "list",
+          "cachedResultName": "Đăng video lên nhiều group",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y/edit#gid=1777283599"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Finished",
+            "row_number": "={{ $('Filter data by status').item.json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "STT",
+              "displayName": "STT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "List link images",
+              "displayName": "List link images",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Main Content",
+              "displayName": "Main Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Mandatory Content",
+              "displayName": "Mandatory Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Group ID",
+              "displayName": "Group ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        900,
+        40
+      ],
+      "id": "1181c86f-1214-4748-ba0e-dee8e0b94971",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZZILbjLGgSlFk78k",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst targetRow = items.find(item => \n  (!item.json['Status'] || item.json['Status'] === '') || \n  (item.json['Status'] && item.json['Status'].toLowerCase().includes('new'))\n);\nreturn targetRow ? [targetRow] : [];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1040,
+        -140
+      ],
+      "id": "a1fd962b-e4ff-469a-a544-12ce32e3c9df",
+      "name": "Filter data by status"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Post video": {
+      "main": [
+        [
+          {
+            "node": "Like post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Đăng cmt": {
+      "main": [
+        [
+          {
+            "node": "Like cmt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Like post": {
+      "main": [
+        [
+          {
+            "node": "Đăng cmt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Like cmt": {
+      "main": [
+        [
+          {
+            "node": "Rep cmt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Post video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Token, ID1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Filter data by status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rep cmt": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter data by status": {
+      "main": [
+        [
+          {
+            "node": "Set Token, ID1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "08c3c1f3-52f4-4398-89b1-1ecb078df489",
+  "meta": {
+    "instanceId": "27f300b5a724bfb4b8c812b1f202e890f33a244619ea6c290b1a6c84110702e5"
+  },
+  "id": "iiPyGHCZuBlqHBkS",
+  "tags": []
+}
