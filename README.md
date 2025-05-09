@@ -19,5 +19,9 @@
 <p>__ng_b_i_Fanpage_nhi_u__nh_v__n_i_dung_t____ng_b_ng_Open_Ai.json</p> <p>Sheet name: Up Post Page setup images, auto content Open Ai</p>
 
 <!-- ================================= -->
-<h1>Tự động phản hồi comment/inbox trên các nền tảng Social</h1>
+<h1>6. Tự động phản hồi comment/inbox trên các nền tảng Social</h1>
 <p>Dev02_T____ng_ph_n_h_i_comment_inbox_tr_n_c_c_n_n_t_ng_Social.json</p>
+
+<!-- ================================= -->
+<h1>7. Đăng nhiều ảnh và nội dung lên nhiều group</h1>
+<p>__ng_nhi_u__nh_v__n_i_dung_l_n_nhi_u_group.json</p>
