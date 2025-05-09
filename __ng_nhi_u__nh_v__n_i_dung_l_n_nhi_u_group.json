@@ -1,0 +1,564 @@
+{
+  "name": "Đăng nhiều ảnh và nội dung lên nhiều group",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "#Test đăng bài + nhiều ảnh {Group}\n",
+        "height": 180,
+        "width": 1020,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        580,
+        360
+      ],
+      "id": "a9540bb4-144e-46d0-b267-9aa787c08bd5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v22.0/{{ $('Set Token, ID').first().json['ID {Group} '] }}/photos",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "access_token",
+              "value": "={{ $('Set Token, ID').first().json.Token }}"
+            },
+            {
+              "name": "url",
+              "value": "={{ $json.img_list }}"
+            },
+            {
+              "name": "published",
+              "value": "false"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1500,
+        400
+      ],
+      "id": "3c431f9d-1db0-4f95-9848-08518ff6b146",
+      "name": "Upload photos",
+      "notesInFlow": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8c69df6e-00c6-4c8c-84fc-334559dd94ad",
+              "name": "media_fbid",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1760,
+        400
+      ],
+      "id": "a9488bbb-e4f9-49e3-bd88-99b9de61bf83",
+      "name": "Edit 1"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "attached_media",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2020,
+        400
+      ],
+      "id": "dd131487-45bc-47a0-a410-7f1f9de11c02",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v22.0/{{ $('Set Token, ID').first().json['ID {Group} '] }}/feed",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "access_token",
+              "value": "={{ $('Set Token, ID').first().json.Token }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $('Code').item.json.Title }} {{ $('Code').item.json['Main Content'] }} {{ $('Code').item.json['Mandatory Content'] }}"
+            },
+            {
+              "name": "published",
+              "value": "true"
+            },
+            {
+              "name": "attached_media",
+              "value": "={{ $json.attached_media }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2200,
+        400
+      ],
+      "id": "bf2c2ac6-e309-4fdc-b213-85b4241a954d",
+      "name": "Published photos",
+      "notesInFlow": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "img_list",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        400
+      ],
+      "id": "cc594616-fd09-4dd6-b383-0d62410cdba4",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        400
+      ],
+      "id": "ec5c4638-34ed-4280-849a-59a17c29f27d",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y",
+          "mode": "list",
+          "cachedResultName": "Full WF n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 74602,
+          "mode": "list",
+          "cachedResultName": "Đăng nhiều ảnh và nội dung lên nhiều group",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y/edit#gid=74602"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -180,
+        400
+      ],
+      "id": "0708e637-7326-4439-b139-0281006e58d2",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZZILbjLGgSlFk78k",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $('Google Sheets').first().json['List link images'];\nconst links = data.split(',').map(link => link.trim());\nconst convertedLinks = links.map(link => {\n  const match = link.match(/\\/d\\/([a-zA-Z0-9_-]+)\\//);\n  if (match && match[1]) {\n    return `https://drive.google.com/uc?export=download&id=${match[1]}`;\n  }\n  return null;\n}).filter(Boolean);\nreturn [\n  {\n    json: {\n      downloadLinks: convertedLinks\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        600,
+        400
+      ],
+      "id": "49deb8bc-f24e-4eb1-ae06-48a12b3ebcfc",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b89b8ccc-7a53-443e-aea4-7a5cbcb1cde2",
+              "name": "=Token",
+              "value": "EAAD6V7os0gcBOxBckhFDTVhI54QrxYZCEUbdRFpKk8XfXGgxHHO74ptEfjxjpahz2pVlaXV8i77FX5Lx1x84fF6DnhJPHB5dMKn9bPAJ1cLxurQufRvFE69qjxZBB1r7yPenOoO2BkySRxkd3QZCHxU9cSmZCsQ0yZBfsboj47LbpO8enNgEdkAZDZD",
+              "type": "string"
+            },
+            {
+              "id": "a7e3fde9-3237-4461-8e25-6aeacc4d35e5",
+              "name": "ID {Group} ",
+              "value": "={{ $json['Group ID'] }}",
+              "type": "string"
+            },
+            {
+              "id": "bb5083a8-dae5-426e-83a2-31d657af7fb6",
+              "name": "ID {Trang cá nhân}",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "35c727dc-14ac-4566-adb8-63be7341dbbf",
+              "name": "ID {Trang cá nhân người khác}",
+              "value": "4",
+              "type": "string"
+            },
+            {
+              "id": "7ded143c-bea9-457f-b909-9c8b9fd6da2b",
+              "name": "ID {Page}",
+              "value": "=",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        280,
+        400
+      ],
+      "id": "3ec7c10f-0a0d-4777-af3f-e57c270f706b",
+      "name": "Set Token, ID",
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0cacd2ae-da93-4bda-bb14-bce96fd892b3",
+              "name": "img_list",
+              "value": "={{ $json.downloadLinks }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        940,
+        400
+      ],
+      "id": "e3a1cce7-e0f3-4b2c-b1c6-d32d5ab09719",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst targetRow = items.find(item => \n  (!item.json['Status'] || item.json['Status'] === '') || \n  (item.json['Status'] && item.json['Status'].toLowerCase().includes('new'))\n);\nreturn targetRow ? [targetRow] : [];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        40,
+        400
+      ],
+      "id": "6dce74a4-ce81-4e81-9ac1-8b024422bd30",
+      "name": "Filter data by status"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y",
+          "mode": "list",
+          "cachedResultName": "Full WF n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 74602,
+          "mode": "list",
+          "cachedResultName": "Đăng nhiều ảnh và nội dung lên nhiều group",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1aIR4oQEkrKn79YmLJpchZdx-Hq9V3QDKxYJqRGj3l4Y/edit#gid=74602"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Finished",
+            "STT": "={{ $('Google Sheets').first().json.STT }}",
+            "row_number": "={{ $('Filter data by status').first().json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "STT",
+              "displayName": "STT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "List link images",
+              "displayName": "List link images",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Main Content",
+              "displayName": "Main Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Mandatory Content",
+              "displayName": "Mandatory Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Group ID",
+              "displayName": "Group ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2420,
+        400
+      ],
+      "id": "3530af09-c9ff-40e1-8fb3-c369fffadf7b",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZZILbjLGgSlFk78k",
+          "name": "Google Sheets account 6"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Upload photos": {
+      "main": [
+        [
+          {
+            "node": "Edit 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit 1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Published photos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Published photos": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Upload photos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Filter data by status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Token, ID": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter data by status": {
+      "main": [
+        [
+          {
+            "node": "Set Token, ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9e55bf9d-63a9-41fb-8ac2-823dfac8067e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "27f300b5a724bfb4b8c812b1f202e890f33a244619ea6c290b1a6c84110702e5"
+  },
+  "id": "aHmOBbFQGdm65Wz2",
+  "tags": []
+}
