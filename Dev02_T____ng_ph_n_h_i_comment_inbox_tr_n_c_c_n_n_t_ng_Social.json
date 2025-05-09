@@ -1,0 +1,705 @@
+{
+  "name": "Dev02 Tự động phản hồi comment/inbox trên các nền tảng Social",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $('Webhook').item.json.query['hub.challenge'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        300,
+        -140
+      ],
+      "id": "bf30bf18-5205-4f06-bac2-948211f73e71",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a professional, friendly, and helpful sales rep.\n\nA Google Sheet called FAQs, state_vector. Use this data to answer customer questions whenever a suitable answer exists.\n\nIf there is no matching question or answer in the data provided, you are allowed to infer and create a reasonable, helpful response — but always keep your response short, clear, and accurate.\n\nCustomer question: {{ $json.text }}\n\nPlease respond in Vietnamese. Keep your responses short, friendly, and focused.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        1020,
+        220
+      ],
+      "id": "6bce675a-f72f-49d0-bfeb-35d286d26eef",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.entry[0].messaging[0].sender.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        1140,
+        480
+      ],
+      "id": "9fcf319c-78b9-41f0-938b-835d9c57689c",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "0pbQIPDA8R2hwQdL",
+          "name": "db_chatbot_messenger"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v22.0/ {{ $('Webhook').item.json.body.entry[0].messaging[0].recipient.id }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer EAAWLfWJllJgBOwGDKw3NGauKv2FmYxuG42IotBKQuHb4tuLGm7pe4BpgzngZCV7jBwSvwpi7tluK367PsOuvgn6he1oyLiMOJ8j8ad9hMhiSEg45DT1h6xD8yaKVd3Xjdq0pjZBVuOtECorFB1fXDt5t1kan4TcRVMN78d5rAd6m248ixZB319N098ZD"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"recipient\":{\"id\":\"{{ $('Get fields').item.json.id }}\"},\"message\":{\"text\": \"{{ $('Code').item.json.data }}\"}}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1580,
+        220
+      ],
+      "id": "ee392ee1-2fe4-40e9-81ea-0edc4c80af47",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "let data = $input.first().json.output.replaceAll('\\n', ' ')\n\nreturn {data:data}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1380,
+        220
+      ],
+      "id": "cff76b45-341b-4601-8543-dcafff71cb78",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "1Z8emVSyUvl_OFH6wSnGIIXM0fFl33cB6TB-SfCZtgRc",
+          "mode": "list",
+          "cachedResultName": "QA Gold",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Z8emVSyUvl_OFH6wSnGIIXM0fFl33cB6TB-SfCZtgRc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "QA",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Z8emVSyUvl_OFH6wSnGIIXM0fFl33cB6TB-SfCZtgRc/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        1280,
+        440
+      ],
+      "id": "08bfdec5-b1d2-4a63-8d7d-0a413c12cac3",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleApi": {
+          "id": "cMCHehkvYuDfrDxT",
+          "name": "Google Sheets account 7"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        960,
+        400
+      ],
+      "id": "53d5aaab-c0bb-4b09-b65c-6ef63647e41c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "I7hAaCkG9aNi9mp6",
+          "name": "OpenAi account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1380,
+        740
+      ],
+      "id": "7022dcf9-7465-40a4-ba6a-a3f8815f2b82",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "I7hAaCkG9aNi9mp6",
+          "name": "OpenAi account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": {
+          "__rl": true,
+          "value": "n8n_chat_histories",
+          "mode": "list",
+          "cachedResultName": "n8n_chat_histories"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        1360,
+        580
+      ],
+      "id": "4cc40c6b-5466-4230-a8c1-1bb1d415973d",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "box8wwJWb5YQcOno",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1760,
+        600
+      ],
+      "id": "7adc1343-aa16-4e28-8e89-14e196a77eea",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "I7hAaCkG9aNi9mp6",
+          "name": "OpenAi account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "state_vector",
+        "description": "active a vector store quando perguntar sobre documentos da empresa"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        1420,
+        400
+      ],
+      "id": "f4cf0e4e-a52b-43f3-b26c-b75ca30e15e8",
+      "name": "Answer questions with a vector store"
+    },
+    {
+      "parameters": {
+        "multipleMethods": true,
+        "path": "10d9ecc7-f68c-4cd6-ae95-fbf7a614f5b0",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -140,
+        0
+      ],
+      "id": "9bdd8a80-a5dc-4e5f-87b1-0e20559669dd",
+      "name": "Webhook",
+      "webhookId": "10d9ecc7-f68c-4cd6-ae95-fbf7a614f5b0"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "47cbbd6b-6aa4-4ed8-8437-4756b9ee2088",
+              "leftValue": "={{ $json.containsKeyword }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        680,
+        120
+      ],
+      "id": "85dd7d73-93c6-4e97-908e-1b6d82955987",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "content": "## Send message to facebook",
+        "height": 300,
+        "width": 1060
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        860,
+        -220
+      ],
+      "id": "d214ca97-9b52-4e39-841a-71dfedb60943",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0f048773-a5ec-4a16-9bc5-8b3a3882cf7e",
+              "name": "query['hub.challenge']",
+              "value": "={{ $json.query['hub.challenge'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        -140
+      ],
+      "id": "65f50ecd-5c2e-4efe-a1eb-6bc9989b0904",
+      "name": "Get challenge"
+    },
+    {
+      "parameters": {
+        "content": "## Get hub challenge",
+        "height": 260,
+        "width": 500
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        20,
+        -240
+      ],
+      "id": "e5c1401e-c796-4657-abd4-11644b4d24ff",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Send message to telegram",
+        "height": 740,
+        "width": 1020
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        880,
+        140
+      ],
+      "id": "c7eef138-7f9a-4305-a057-2b6dfede68d0",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "graphApiVersion": "v22.0",
+        "node": "={{ $json.id }}",
+        "edge": "?field=name",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        300,
+        120
+      ],
+      "id": "b46f47ec-d293-4c42-b5fa-fde51d720c2a",
+      "name": "Get message from sender",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "4w0QiGThbs5eeWj0",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $('Get fields').first().json.text\nconst regex = /\\b(ngộ độc|hết hàng|thái độ|sai giá)\\b/i;\nconst result = regex.test(data);\n\nreturn [\n  {\n    json: {\n      containsKeyword: result\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        500,
+        120
+      ],
+      "id": "fa23b778-fe4e-4d37-bd5a-92de716b20c9",
+      "name": "Filter keyword in message"
+    },
+    {
+      "parameters": {
+        "jsCode": "const timestamp = $('Webhook').first().json.body.entry[0].messaging[0].timestamp;\nconst sentTime = new Date(timestamp).toISOString(); \n\nreturn [\n  {\n    json: {\n      sentTime\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        -120
+      ],
+      "id": "b073e9a2-cb07-4161-9a66-d3a37b7f87ad",
+      "name": "Transfer time"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot7834572826:AAGBPOy8i-Igq9T8emuZl19BvjPhqCWtBVg/deleteWebhook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1220,
+        -120
+      ],
+      "id": "13a587a8-d5e5-4aae-8567-553b642583ae",
+      "name": "Delete webhook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot7834572826:AAGBPOy8i-Igq9T8emuZl19BvjPhqCWtBVg/sendMessage",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chat_id\": \"1432249904\",\n  \"text\": \"Người nhắn:{{ $('Get message from sender').item.json.first_name }} {{ $('Get message from sender').item.json.last_name }}, thời gian: {{ $('Transfer time').item.json.sentTime }}, nội dung: {{ $('Get fields').item.json.text }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1420,
+        -120
+      ],
+      "id": "7fe6ce9c-d7f4-48e0-9999-fb69d6414466",
+      "name": "Sent message"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot734572826:AAGBPOy8i-Igq9T8emuZl19BvjPhqCWtBVg/getUpdates",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1620,
+        -120
+      ],
+      "id": "a12730f6-960a-4156-bf5f-e1e5b594b281",
+      "name": "Get update"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f136e0ff-f097-4a74-8530-fdf071b08d0a",
+              "name": "id",
+              "value": "={{ $json.body.entry[0].messaging[0].sender.id }}",
+              "type": "string"
+            },
+            {
+              "id": "c18036eb-9db5-4f47-96e3-f5efefc4c354",
+              "name": "text",
+              "value": "={{ $json.body.entry[0].messaging[0].message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        120
+      ],
+      "id": "8c359ef1-65f4-4c76-a654-6c0fd9fea641",
+      "name": "Get fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer questions with a vector store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get challenge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Transfer time",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get challenge": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get message from sender": {
+      "main": [
+        [
+          {
+            "node": "Filter keyword in message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter keyword in message": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transfer time": {
+      "main": [
+        [
+          {
+            "node": "Delete webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete webhook": {
+      "main": [
+        [
+          {
+            "node": "Sent message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sent message": {
+      "main": [
+        [
+          {
+            "node": "Get update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get fields": {
+      "main": [
+        [
+          {
+            "node": "Get message from sender",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4715bb6d-6034-4ced-bbcc-248301af5205",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "27f300b5a724bfb4b8c812b1f202e890f33a244619ea6c290b1a6c84110702e5"
+  },
+  "id": "uqAUrbA95zLGgyiV",
+  "tags": []
+}
