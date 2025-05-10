@@ -21,7 +21,8 @@
 <!-- ================================= -->
 <h1>6. Tự động phản hồi comment/inbox trên các nền tảng Social</h1>
 <p>Dev02_T____ng_ph_n_h_i_comment_inbox_tr_n_c_c_n_n_t_ng_Social.json</p>
-<p>Link video demo: https://youtu.be/H9VKd7VvPRM</p>
+<p>Link video demo messenger: https://youtu.be/H9VKd7VvPRM</p>
+<p>Link video demo zalo: https://youtu.be/izWwahEbAzo</p>
 
 
 
