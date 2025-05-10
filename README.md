@@ -25,3 +25,7 @@
 <!-- ================================= -->
 <h1>7. Đăng nhiều ảnh và nội dung lên nhiều group</h1>
 <p>__ng_nhi_u__nh_v__n_i_dung_l_n_nhi_u_group.json</p>
+
+<!-- ================================= -->
+<h1>8. Đăng video lên nhiều group</h1>
+<p>__ng_video_l_n_nhi_u_group.json</p>
