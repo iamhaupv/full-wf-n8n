@@ -21,9 +21,8 @@
 <!-- ================================= -->
 <h1>6. Tự động phản hồi comment/inbox trên các nền tảng Social</h1>
 <p>Dev02_T____ng_ph_n_h_i_comment_inbox_tr_n_c_c_n_n_t_ng_Social.json</p>
-[![Xem video demo](https://img.youtube.com/vi/H9VKd7VvPRM/0.jpg)](https://youtu.be/H9VKd7VvPRM)
+<p>Link video demo: https://youtu.be/H9VKd7VvPRM</p>
 
-📺 Bấm vào hình để xem video trên YouTube.
 
 
 
