@@ -21,12 +21,10 @@
 <!-- ================================= -->
 <h1>6. Tự động phản hồi comment/inbox trên các nền tảng Social</h1>
 <p>Dev02_T____ng_ph_n_h_i_comment_inbox_tr_n_c_c_n_n_t_ng_Social.json</p>
-<iframe width="560" height="315" 
-  src="https://www.youtube.com/embed/H9VKd7VvPRM" 
-  title="YouTube video player" frameborder="0" 
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-  allowfullscreen>
-</iframe>
+[![Xem video demo](https://img.youtube.com/vi/H9VKd7VvPRM/0.jpg)](https://youtu.be/H9VKd7VvPRM)
+
+📺 Bấm vào hình để xem video trên YouTube.
+
 
 
 <!-- ================================= -->
