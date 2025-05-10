@@ -21,6 +21,11 @@
 <!-- ================================= -->
 <h1>6. Tự động phản hồi comment/inbox trên các nền tảng Social</h1>
 <p>Dev02_T____ng_ph_n_h_i_comment_inbox_tr_n_c_c_n_n_t_ng_Social.json</p>
+<video controls width="640" height="360">
+  <source src="https://ap-southeast-1.console.aws.amazon.com/s3/object/n8n696969696969?region=ap-southeast-1&prefix=2025-05-09+16-20-58.mp4" type="video/mp4">
+  Trình duyệt của bạn không hỗ trợ thẻ video.
+</video>
+
 
 <!-- ================================= -->
 <h1>7. Đăng nhiều ảnh và nội dung lên nhiều group</h1>
