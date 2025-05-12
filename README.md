@@ -23,10 +23,6 @@
 <p>Dev02_T____ng_ph_n_h_i_comment_inbox_tr_n_c_c_n_n_t_ng_Social.json</p>
 <p>Link video demo messenger: https://youtu.be/H9VKd7VvPRM</p>
 <p>Link video demo zalo: https://youtu.be/izWwahEbAzo</p>
-
-
-
-
 <!-- ================================= -->
 <h1>7. Đăng nhiều ảnh và nội dung lên nhiều group</h1>
 <p>__ng_nhi_u__nh_v__n_i_dung_l_n_nhi_u_group.json</p>
@@ -38,3 +34,6 @@
 <!-- ================================= -->
 <h1>9. Tự động download video tiktok không có watermark</h1>
 <p>t____ng_t_i_tiktok_vid.json</p>
+<!-- ================================= -->
+<h1>10. Dev02 Đăng comment hàng loạt trên group</h1>
+<p>Dev02___ng_comment_h_ng_lo_t_tr_n_group.json</p>
