@@ -1,0 +1,254 @@
+{
+  "name": "Dev02 Đăng comment hàng loạt trên group",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v22.0/{{ $json.id }}/comments",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Set Token, ID').first().json.Token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "tự cmt hàng loạt"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        -20
+      ],
+      "id": "60805e15-3709-45ff-b1df-90aae87bc02a",
+      "name": "Đăng cmt [0]3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b89b8ccc-7a53-443e-aea4-7a5cbcb1cde2",
+              "name": "=Token",
+              "value": "EAAD6V7os0gcBO0i6mQk0pxebQJVo37FaGpm0qZAzmijUiWgZBK18LLhu3SlgIQs4iSbLWZCrI8GTrR46FCZBqZASykNfFSvGkH7PbjnrdZCvCZCzdHDsrqp9GOhqYrBuKvSLfqV0TFC2sg8QoFq9T5ffjcwF4YeLWPmZBhagJebY06D46ivP8yyJLgZDZD",
+              "type": "string"
+            },
+            {
+              "id": "a7e3fde9-3237-4461-8e25-6aeacc4d35e5",
+              "name": "ID {Group} ",
+              "value": "2133697293738549",
+              "type": "string"
+            },
+            {
+              "id": "bb5083a8-dae5-426e-83a2-31d657af7fb6",
+              "name": "ID {Trang cá nhân}",
+              "value": "me",
+              "type": "string"
+            },
+            {
+              "id": "35c727dc-14ac-4566-adb8-63be7341dbbf",
+              "name": "ID {Trang cá nhân người khác}",
+              "value": "4",
+              "type": "string"
+            },
+            {
+              "id": "7ded143c-bea9-457f-b909-9c8b9fd6da2b",
+              "name": "ID {Page}",
+              "value": "100044172082436",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -20,
+        -40
+      ],
+      "id": "4e543f96-dff5-470f-9f91-b28b834370a0",
+      "name": "Set Token, ID",
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/v22.0/{{ $json[\"ID {Group} \"] }}/feed?access_token={{ $('Set Token, ID').first().json.Token }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Set Token, ID').first().json.Token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        -40
+      ],
+      "id": "c5e00012-82af-40f7-9eef-4d99ddfe3e92",
+      "name": "Lấy tất cả ID bài viết3"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        440,
+        -40
+      ],
+      "id": "a5caa135-b300-42a3-a9fa-335d2cd01d91",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        660,
+        -40
+      ],
+      "id": "248f8f16-5d58-4ffb-9ad9-fee46ad977ad",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1160,
+        180
+      ],
+      "id": "9482bf17-3275-46c3-b7e4-17697a9b516f",
+      "name": "Wait",
+      "webhookId": "35418a80-d76e-47e6-b217-6348dd09a5b4"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        -40
+      ],
+      "id": "26ceee69-3260-46a6-9f1b-0d04858e3a4d",
+      "name": "When clicking ‘Test workflow’"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Đăng cmt [0]3": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Token, ID": {
+      "main": [
+        [
+          {
+            "node": "Lấy tất cả ID bài viết3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lấy tất cả ID bài viết3": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Đăng cmt [0]3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Token, ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b81349c3-af3e-4384-bb15-8b35e6f758af",
+  "meta": {
+    "instanceId": "27f300b5a724bfb4b8c812b1f202e890f33a244619ea6c290b1a6c84110702e5"
+  },
+  "id": "NXZnR0gOYoBySHRJ",
+  "tags": []
+}
