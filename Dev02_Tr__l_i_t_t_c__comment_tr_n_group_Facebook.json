@@ -1,0 +1,411 @@
+{
+  "name": "Dev02 Trả lời tất cả comment trên group Facebook",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v22.0/{{ $json.id }}/comments",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Set Token, ID').first().json.Token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "Fanpage xin chào bạn. Cảm ơn bạn đã tương tác với page!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1040,
+        -20
+      ],
+      "id": "5b334332-fcc4-4a7e-a5e1-9faf18b2a91b",
+      "name": "Đăng cmt [0]3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b89b8ccc-7a53-443e-aea4-7a5cbcb1cde2",
+              "name": "=Token",
+              "value": "EAAD6V7os0gcBOwfy5F7lf4HlpZBTXz6F5vEHTmgeDz7DaKQMvFRSjn8YmyM5ZAJCW5lzrB01hQorY982EE0XY3BZANbrAXwMIfZAyaUo5hrgczxTI4P9vzia4dIq3BxGLhZCfWLGwnfLHcZCbZB0uMgWsgAeKARW1BkBZBl5ngHqedm3AazDyoaiewZDZD",
+              "type": "string"
+            },
+            {
+              "id": "a7e3fde9-3237-4461-8e25-6aeacc4d35e5",
+              "name": "ID {Group} ",
+              "value": "699604219122314",
+              "type": "string"
+            },
+            {
+              "id": "bb5083a8-dae5-426e-83a2-31d657af7fb6",
+              "name": "ID {Trang cá nhân}",
+              "value": "me",
+              "type": "string"
+            },
+            {
+              "id": "35c727dc-14ac-4566-adb8-63be7341dbbf",
+              "name": "ID {Trang cá nhân người khác}",
+              "value": "4",
+              "type": "string"
+            },
+            {
+              "id": "7ded143c-bea9-457f-b909-9c8b9fd6da2b",
+              "name": "ID {Page}",
+              "value": "600757316462284",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -940,
+        120
+      ],
+      "id": "cdf7baf9-a013-4369-b14d-7ad7ce7f8a29",
+      "name": "Set Token, ID",
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/v22.0/{{ $json[\"ID {Group} \"] }}/feed?access_token={{ $json.Token }}&fields=id,from,message,created_time,comments.summary(true)",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Set Token, ID').first().json.Token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -700,
+        120
+      ],
+      "id": "cd0847b3-c3fc-4b94-9c89-c9ab4befa852",
+      "name": "Lấy tất cả ID bài viết3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        800,
+        -40
+      ],
+      "id": "62b49d28-da58-4be7-b8bd-ca0291c1244b",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1280,
+        -20
+      ],
+      "id": "25f6edca-5530-4787-b8ce-12cf67fb003a",
+      "name": "Wait",
+      "webhookId": "35418a80-d76e-47e6-b217-6348dd09a5b4"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1220,
+        120
+      ],
+      "id": "7a927df2-de7a-4591-a2c1-4e127d37e4a5",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "const ids = $input.first().json.commentIds\nconst result = ids.map(id => ({\n  json: { id: id }\n}));\nreturn result;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        540,
+        -100
+      ],
+      "id": "a2d5b69b-2836-4fdd-bbc5-1a1dd1029d2c",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Tạo Set để tránh trùng lặp ID\nconst commentIdSet = new Set();\n\nfor (const item of items) {\n  const comments = item.json.data;\n\n  if (Array.isArray(comments)) {\n    for (const comment of comments) {\n      const totalCount = comment.comments?.summary?.total_count || 0;\n      if (comment.id && totalCount === 0) {\n        commentIdSet.add(comment.id);\n      }\n    }\n  }\n}\n\n// Chuyển Set về mảng\nconst commentIds = Array.from(commentIdSet);\n\n// Trả về kết quả dưới dạng 1 item\nreturn [\n  {\n    json: {\n      commentIds\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        -100
+      ],
+      "id": "9cb7bd17-1893-4996-9e71-854d762ab08d",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -240,
+        100
+      ],
+      "id": "bb4c3efc-d442-429f-9398-2b95c928980b",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawData = $input.first().json.data\nconst output = rawData.map(comment => {\n  return {\n    comment_id: comment.id,\n    message: comment.message || null,\n    total_replies: comment.comments?.summary?.total_count || 0\n  };\n});\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -480,
+        120
+      ],
+      "id": "17b3fe45-b526-4bba-a356-103649d9106c",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/v22.0/{{ $json.comment_id }}/comments?fields=id,from,message,created_time,comments.summary(true)&access_token={{ $('Set Token, ID').item.json.Token }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer EAAD6V7os0gcBO0i6mQk0pxebQJVo37FaGpm0qZAzmijUiWgZBK18LLhu3SlgIQs4iSbLWZCrI8GTrR46FCZBqZASykNfFSvGkH7PbjnrdZCvCZCzdHDsrqp9GOhqYrBuKvSLfqV0TFC2sg8QoFq9T5ffjcwF4YeLWPmZBhagJebY06D46ivP8yyJLgZDZD"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        20,
+        180
+      ],
+      "id": "e55589c3-1288-40cf-8529-f10debac5be6",
+      "name": "Lấy tất cả comment"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f79699dc-39ca-418e-b7f5-50a7a90cede7",
+              "leftValue": "={{ $json.data[0].comments.summary.total_count }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        20,
+        -40
+      ],
+      "id": "9d43cff2-809b-419a-b741-0aa283f6abb2",
+      "name": "If1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Đăng cmt [0]3": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Token, ID": {
+      "main": [
+        [
+          {
+            "node": "Lấy tất cả ID bài viết3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lấy tất cả ID bài viết3": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Đăng cmt [0]3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Token, ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Lấy tất cả comment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lấy tất cả comment": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b86de526-2f1e-4420-8893-d555c2fbfcd8",
+  "meta": {
+    "instanceId": "27f300b5a724bfb4b8c812b1f202e890f33a244619ea6c290b1a6c84110702e5"
+  },
+  "id": "y5vtQmErXOiPJG3n",
+  "tags": []
+}
