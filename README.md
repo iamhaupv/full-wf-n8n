@@ -42,6 +42,9 @@
 <p>Dev02_T____ng___ng_comment_h_ng_lo_t_page_facebook.json</p>
 <p>Link video demo: https://youtu.be/8oT8kHVQhPM</p>
 
-
+<!-- ================================= -->
+<h1>12. Dev02 Trả lời tất cả comment trên group Facebook</h1>
+<p>Dev02_Tr__l_i_t_t_c__comment_tr_n_group_Facebook.json</p>
+<p>Link video demo: https://youtu.be/MwE17ok4W4o</p>
 
 
