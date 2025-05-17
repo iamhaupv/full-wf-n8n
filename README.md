@@ -37,6 +37,11 @@
 <!-- ================================= -->
 <h1>10. Dev02 Đăng comment hàng loạt trên group</h1>
 <p>Dev02___ng_comment_h_ng_lo_t_tr_n_group.json</p>
+<p>Link video demo: https://youtu.be/8oT8kHVQhPM</p>
 <!-- ================================= -->
 <h1>11. Dev02 Tự động đăng comment hàng loạt page facebook</h1>
 <p>Dev02_T____ng___ng_comment_h_ng_lo_t_page_facebook.json</p>
+
+
+
+
